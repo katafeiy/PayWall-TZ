@@ -23,7 +23,7 @@ class PayWallCell: UITableViewCell {
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 11, weight: .regular)
-        label.textColor = .buttonGray
+        label.textColor = .mainGray
         label.numberOfLines = 1
         return label
     }()

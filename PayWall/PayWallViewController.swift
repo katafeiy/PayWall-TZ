@@ -45,7 +45,7 @@ class PayWallViewController: UIViewController {
     lazy var tapLess: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Tap Less.", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return button
     }()
@@ -53,7 +53,7 @@ class PayWallViewController: UIViewController {
     lazy var winMore: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Win more.", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return button
     }()
@@ -61,7 +61,7 @@ class PayWallViewController: UIViewController {
     lazy var automateAnything: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Automate anything.", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return button
     }()
@@ -94,6 +94,7 @@ class PayWallViewController: UIViewController {
     lazy var paySwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.onTintColor = .mainYellow
+        switchView.backgroundColor = .mainGray
         switchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
         return switchView
     }()
@@ -147,7 +148,7 @@ class PayWallViewController: UIViewController {
     lazy var terms: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Terms", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         button.tag = WebLink.terms.rawValue
         button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
@@ -157,7 +158,7 @@ class PayWallViewController: UIViewController {
     lazy var privacy: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Privacy", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         button.tag = WebLink.privacy.rawValue
         button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
@@ -167,7 +168,7 @@ class PayWallViewController: UIViewController {
     lazy var subscriptionPolicy: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Subscription Policy", for: .normal)
-        button.setTitleColor(.buttonGray, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         button.tag = WebLink.subscriptionPolicy.rawValue
         button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
@@ -201,10 +202,16 @@ class PayWallViewController: UIViewController {
     
     @objc
     func handleSwitch(_ sender: UISwitch) {
-        sender.thumbTintColor = sender.isOn ? .bg : .mainWhite
+        updateSwitchAppearance(sender)
         trialLabel.isHidden = !sender.isOn
         continueButton.setTitle(sender.isOn ? "Start Free Trial" : "Continue", for: .normal)
         print("Switch changed")
+    }
+    
+    private func updateSwitchAppearance(_ switchView: UISwitch) {
+        switchView.thumbTintColor = switchView.isOn ? .bg : .mainWhite
+        switchView.backgroundColor = switchView.isOn ? nil : .mainGray
+        switchView.layer.cornerRadius = switchView.isOn ? 0 : switchView.frame.height / 2
     }
     
     @objc
@@ -289,6 +296,7 @@ class PayWallViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        updateSwitchAppearance(paySwitch)
         if let gradientLayer = view.layer.sublayers?.first as? CAGradientLayer {
             gradientLayer.frame = view.bounds
         }
