@@ -15,7 +15,7 @@ class PayWall: UIViewController {
     
     private var checkedStates: [Bool] = Array(repeating: true, count: 5)
     
-    private lazy var closeButton: UIButton = {
+    lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
@@ -24,14 +24,14 @@ class PayWall: UIViewController {
         return button
     }()
     
-    lazy var handPointImage: UIImageView = {
+   var handPointImage: UIImageView = {
         let image = UIImage.handPoint
         let imageView = UIImageView(image: image)
         imageView.backgroundColor = .clear
         return imageView
     }()
     
-    lazy var payWallLabel: UILabel = {
+    var payWallLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.textAlignment = .center
@@ -183,7 +183,6 @@ class PayWall: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
         setupUI()
         setupGradientBackground()
     }
@@ -200,15 +199,9 @@ class PayWall: UIViewController {
     
     @objc
     func handleSwitch(_ sender: UISwitch) {
-        if sender.isOn {
-            sender.thumbTintColor = .bg
-            trialLabel.isHidden = false
-            continueButton.setTitle( "Start Free Trial", for: .normal)
-        } else {
-            sender.thumbTintColor = .mainWhite
-            continueButton.setTitle( "Continue", for: .normal)
-            trialLabel.isHidden = true
-        }
+        sender.thumbTintColor = sender.isOn ? .bg : .mainWhite
+        trialLabel.isHidden = !sender.isOn
+        continueButton.setTitle(sender.isOn ? "Start Free Trial" : "Continue", for: .normal)
         print("Switch changed")
     }
     
