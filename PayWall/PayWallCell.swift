@@ -66,7 +66,6 @@ class PayWallCell: UITableViewCell {
         contentView.backgroundColor = .clear
         selectionStyle = .none
         
-        // Добавляем основной стек
         contentView.addSubview(mainStackView)
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -77,16 +76,13 @@ class PayWallCell: UITableViewCell {
             mainStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
         
-        // Добавляем чекбокс в основной стек
         mainStackView.addArrangedSubview(checkBoxImageView)
         
-        // Устанавливаем размер чекбокса
         NSLayoutConstraint.activate([
             checkBoxImageView.widthAnchor.constraint(equalToConstant: 16),
             checkBoxImageView.heightAnchor.constraint(equalToConstant: 16)
         ])
         
-        // Добавляем тап-жест для чекбокса
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleCheckboxTap))
         checkBoxImageView.isUserInteractionEnabled = true
         checkBoxImageView.addGestureRecognizer(tapGesture)
@@ -114,15 +110,13 @@ class PayWallCell: UITableViewCell {
     }
     
     func configureWithTwoLines(title: String, subtitle: String, isChecked: Bool) {
-        // Убираем предыдущие вью
+
         singleLineLabel.removeFromSuperview()
         textStackView.removeFromSuperview()
         
-        // Настраиваем стек для текста
         textStackView.addArrangedSubview(titleLabel)
         textStackView.addArrangedSubview(subtitleLabel)
         
-        // Добавляем текстовый стек в основной стек
         mainStackView.addArrangedSubview(textStackView)
         
         titleLabel.text = title
@@ -132,11 +126,10 @@ class PayWallCell: UITableViewCell {
     }
     
     func configureWithOneLine(text: String, isChecked: Bool) {
-        // Убираем предыдущие вью
+
         textStackView.removeFromSuperview()
         singleLineLabel.removeFromSuperview()
         
-        // Добавляем singleLineLabel в основной стек
         mainStackView.addArrangedSubview(singleLineLabel)
         
         singleLineLabel.text = text

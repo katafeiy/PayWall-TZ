@@ -278,24 +278,18 @@ class PayWall: UIViewController {
     }
     
     private func setupGradientBackground() {
-        // Создаем градиентный слой
+  
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = view.frame
+        gradientLayer.frame = view.bounds
         
-        // Задаем цвета градиента
         gradientLayer.colors = [
             UIColor.bg.cgColor,
             UIColor.filling.cgColor
         ]
         
-        // Задаем точки градиента (от 0 до 1)
         gradientLayer.locations = [0.0, 1.0]
-        
-        // Направление градиента
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0) // верх
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)   // низ
-        
-        // Добавляем слой как самый нижний
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         view.layer.insertSublayer(gradientLayer, at: 0)
     }
     
@@ -345,11 +339,9 @@ extension PayWall: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        // Переключаем состояние чекбокса
+
         checkedStates[indexPath.row].toggle()
         
-        // Анимируем изменение состояния
         if let cell = tableView.cellForRow(at: indexPath) as? PayWallCell {
             cell.setChecked(checkedStates[indexPath.row], animated: true)
         }
@@ -377,5 +369,4 @@ struct PayWallPreview: UIViewControllerRepresentable {
 #Preview {
     PayWallPreview()
         .ignoresSafeArea()
-    //        .frame(width: 300, height: 100)
 }
