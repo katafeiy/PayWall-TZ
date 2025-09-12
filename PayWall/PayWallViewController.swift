@@ -1,21 +1,21 @@
 import UIKit
 import SwiftUI
 
-class PayWallViewController: UIViewController {
+protocol PayWallViewProtocol: AnyObject {
+    func updateSwitchState(isOn: Bool)
+    func updateTable()
+    func updateContinueButton(title: String)
+    func showWebPage(url: String)
+    func close()
+}
+
+final class PayWallViewController: UIViewController, PayWallViewProtocol {
     
-    let price: String = "$5.99/week"
+    private let presenter: PayWallPresenter
     
-    let tableItems = [
-        ["No limits", "Tap as much as you want"],
-        ["Place multiple tap points on any screen"],
-        ["Save setups and load them instantly"],
-        ["Fast & accurate", "Works even on tricky buttons"],
-        ["Use it anywhere", "Games, apps, or web tools"]
-    ]
+    private var checkedStates: [Bool] = []
     
-    private var checkedStates: [Bool] = Array(repeating: true, count: 5)
-    
-    lazy var closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
@@ -24,15 +24,14 @@ class PayWallViewController: UIViewController {
         return button
     }()
     
-   var handPointImage: UIImageView = {
-        let image = UIImage.handPoint
-        let imageView = UIImageView(image: image)
+    private lazy var handPointImage: UIImageView = {
+        let imageView = UIImageView(image: UIImage.handPoint)
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
         return imageView
     }()
     
-    var payWallLabel: UILabel = {
+    private lazy var payWallLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.textAlignment = .center
@@ -42,38 +41,18 @@ class PayWallViewController: UIViewController {
         return label
     }()
     
-    lazy var tapLess: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Tap Less.", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        return button
-    }()
+    private lazy var tapLess: UIButton = PayWallViewController.makeOptionButton(title: "Tap Less.")
+    private lazy var winMore: UIButton = PayWallViewController.makeOptionButton(title: "Win more.")
+    private lazy var automateAnything: UIButton = PayWallViewController.makeOptionButton(title: "Automate anything.")
     
-    lazy var winMore: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Win more.", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        return button
-    }()
-    
-    lazy var automateAnything: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Automate anything.", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        return button
-    }()
-    
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [tapLess, winMore, automateAnything])
         stackView.axis = .horizontal
         stackView.spacing = 8
         return stackView
     }()
     
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -84,57 +63,57 @@ class PayWallViewController: UIViewController {
         return tableView
     }()
     
-    lazy var payView: UIView = {
+    private lazy var payView: UIView = {
         let view = UIView()
         view.backgroundColor = .buttonGray
         view.layer.cornerRadius = 36
         return view
     }()
     
-    lazy var paySwitch: UISwitch = {
+    private lazy var paySwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.onTintColor = .mainYellow
         switchView.backgroundColor = .mainGray
-        switchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
+        switchView.addTarget(self, action: #selector(handleSwitch(_:)), for: .valueChanged)
         return switchView
     }()
     
-    lazy var payLabel: UILabel = {
+    private lazy var payLabel: UILabel = {
         let label = UILabel()
         label.textColor = .mainWhite
         label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         label.textAlignment = .left
-        label.text = price
+        label.text = presenter.payPrice
         return label
     }()
     
-    lazy var trialLabel: UILabel = {
+    private lazy var trialLabel: UILabel = {
         let label = UILabel()
         label.textColor = .mainYellow
-        label.font = UIFont.systemFont(ofSize: 11, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 11)
         label.textAlignment = .left
         label.text = "Start with 3-Day Free Trial"
+        label.isHidden = true
         return label
     }()
     
-    lazy var cancelLabel: UILabel = {
+    private lazy var cancelLabel: UILabel = {
         let label = UILabel()
         label.textColor = .mainGray
-        label.font = UIFont.systemFont(ofSize: 11, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 11)
         label.textAlignment = .left
         label.text = "Cancel anytime"
         return label
     }()
     
-    lazy var payStackView: UIStackView = {
+    private lazy var payStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [payLabel, trialLabel, cancelLabel])
         stackView.axis = .vertical
-        trialLabel.isHidden = true
-        stackView.spacing = trialLabel.isHidden ? 4 : 2
+        stackView.spacing = 4
         return stackView
     }()
     
-    lazy var continueButton: UIButton = {
+    private lazy var continueButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .mainYellow
         button.layer.cornerRadius = 36
@@ -145,37 +124,11 @@ class PayWallViewController: UIViewController {
         return button
     }()
     
-    lazy var terms: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Terms", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        button.tag = WebLink.terms.rawValue
-        button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
-        return button
-    }()
+    private lazy var terms: UIButton = PayWallViewController.makeFooterButton(title: "Terms", tag: WebLink.terms.rawValue, target: self)
+    private lazy var privacy: UIButton = PayWallViewController.makeFooterButton(title: "Privacy", tag: WebLink.privacy.rawValue, target: self)
+    private lazy var subscriptionPolicy: UIButton = PayWallViewController.makeFooterButton(title: "Subscription Policy", tag: WebLink.subscriptionPolicy.rawValue, target: self)
     
-    lazy var privacy: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Privacy", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        button.tag = WebLink.privacy.rawValue
-        button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var subscriptionPolicy: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Subscription Policy", for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        button.tag = WebLink.subscriptionPolicy.rawValue
-        button.addTarget(self, action: #selector(openWebView(_:)), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var stackViewFooter: UIStackView = {
+    private lazy var stackViewFooter: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [terms, privacy, subscriptionPolicy])
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
@@ -183,6 +136,15 @@ class PayWallViewController: UIViewController {
         return stackView
     }()
     
+
+    init(presenter: PayWallPresenter) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+        self.presenter.view = self
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -190,41 +152,41 @@ class PayWallViewController: UIViewController {
         setupUI()
     }
     
-    @objc
-    func handleContinue() {
-        print("Continue")
-    }
-    
-    @objc
-    func handleClose() {
-        print("Экран закрылся")
-    }
-    
-    @objc
-    func handleSwitch(_ sender: UISwitch) {
-        updateSwitchAppearance(sender)
-        trialLabel.isHidden = !sender.isOn
-        continueButton.setTitle(sender.isOn ? "Start Free Trial" : "Continue", for: .normal)
-        print("Switch changed")
-    }
-    
-    private func updateSwitchAppearance(_ switchView: UISwitch) {
-        switchView.thumbTintColor = switchView.isOn ? .bg : .mainWhite
-        switchView.backgroundColor = switchView.isOn ? nil : .mainGray
-        switchView.layer.cornerRadius = switchView.isOn ? 0 : switchView.frame.height / 2
-    }
-    
-    @objc
-    func openWebView(_ sender: UIButton) {
-       if let link = WebLink(rawValue: sender.tag) {
-           let webVC = WebViewController(urlString: link.url)
-            webVC.modalPresentationStyle = .fullScreen
-            present(webVC, animated: true)
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateSwitchState(isOn: paySwitch.isOn)
+        if let gradientLayer = view.layer.sublayers?.first as? CAGradientLayer {
+            gradientLayer.frame = view.bounds
         }
     }
+
+    @objc private func handleContinue() { presenter.handleContinue() }
+    @objc private func handleClose() { presenter.handleClose() }
+    @objc private func handleSwitch(_ sender: UISwitch) { presenter.handleSwitch(isOn: sender.isOn) }
     
-    func setupUI() {
-        
+    @objc private func openWebView(_ sender: UIButton) {
+        if let link = WebLink(rawValue: sender.tag) {
+            presenter.handleOpenWeb(link)
+        }
+    }
+ 
+    func updateSwitchState(isOn: Bool) {
+        paySwitch.thumbTintColor = isOn ? .bg : .mainWhite
+        paySwitch.backgroundColor = isOn ? nil : .mainGray
+        paySwitch.layer.cornerRadius = isOn ? 0 : paySwitch.frame.height / 2
+        trialLabel.isHidden = !isOn
+    }
+    
+    func updateContinueButton(title: String) { continueButton.setTitle(title, for: .normal) }
+    func updateTable() { tableView.reloadData() }
+    func showWebPage(url: String) {
+        let webVC = WebViewController(urlString: url)
+        webVC.modalPresentationStyle = .fullScreen
+        present(webVC, animated: true)
+    }
+    func close() { dismiss(animated: true) }
+    
+    private func setupUI() {
         view.addSubviews(closeButton, continueButton, handPointImage, payWallLabel, stackView, tableView, payView, stackViewFooter)
         payView.addSubviews(paySwitch, payStackView)
         
@@ -280,90 +242,60 @@ class PayWallViewController: UIViewController {
     }
     
     private func setupGradientBackground() {
-  
         let gradientLayer = CAGradientLayer()
-        
-        gradientLayer.colors = [
-            UIColor.bg.cgColor,
-            UIColor.filling.cgColor
-        ]
-        
+        gradientLayer.colors = [UIColor.bg.cgColor, UIColor.filling.cgColor]
         gradientLayer.locations = [0.0, 1.0]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         view.layer.insertSublayer(gradientLayer, at: 0)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateSwitchAppearance(paySwitch)
-        if let gradientLayer = view.layer.sublayers?.first as? CAGradientLayer {
-            gradientLayer.frame = view.bounds
-        }
+    private static func makeOptionButton(title: String) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        return button
+    }
+    
+    private static func makeFooterButton(title: String, tag: Int, target: Any) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.mainGray, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+        button.tag = tag
+        button.addTarget(target, action: #selector(PayWallViewController.openWebView(_:)), for: .touchUpInside)
+        return button
     }
 }
 
 extension PayWallViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableItems.count
-    }
-    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { presenter.tableItems.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PayWallCell.reuseIdentifier, for: indexPath) as? PayWallCell else {
-            return UITableViewCell()
-        }
-        
-        let item = tableItems[indexPath.row]
-        if item.count == 2 {
-            cell.configureWithTwoLines(
-                title: item[0],
-                subtitle: item[1],
-                isChecked: checkedStates[indexPath.row]
-            )
-        } else {
-            cell.configureWithOneLine(
-                text: item[0],
-                isChecked: checkedStates[indexPath.row]
-            )
-        }
-        
-        cell.onCheckboxTapped = { [weak self] isChecked in
-            self?.checkedStates[indexPath.row] = isChecked
-            
-        }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PayWallCell.reuseIdentifier, for: indexPath) as? PayWallCell else { return UITableViewCell() }
+        let item = presenter.tableItems[indexPath.row]
+        let isChecked = presenter.isChecked(at: indexPath.row)
+        if item.count == 2 { cell.configureWithTwoLines(title: item[0], subtitle: item[1], isChecked: isChecked) }
+        else { cell.configureWithOneLine(text: item[0], isChecked: isChecked) }
+        cell.onCheckboxTapped = { [weak self] _ in self?.presenter.handleCheckbox(at: indexPath.row) }
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        25
-    }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 25 }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
-        checkedStates[indexPath.row].toggle()
-        
-        if let cell = tableView.cellForRow(at: indexPath) as? PayWallCell {
-            cell.setChecked(checkedStates[indexPath.row], animated: true)
-        }
+        presenter.handleCheckbox(at: indexPath.row)
     }
 }
 
 extension UIView {
-    
-    func addSubviews(_ views: UIView...) {
-        views.forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            self.addSubview($0)
-        }
-    }
+    func addSubviews(_ views: UIView...) { views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false; addSubview($0) } }
 }
 
-// Обертка для SwiftUI Preview
 struct PayWallPreview: UIViewControllerRepresentable {
-    
-    func makeUIViewController(context: Context) -> PayWallViewController { PayWallViewController() }
+    func makeUIViewController(context: Context) -> PayWallViewController {
+        let presenter = PayWallPresenter(view: nil)
+        return PayWallViewController(presenter: presenter)
+    }
     
     func updateUIViewController(_ uiViewController: PayWallViewController, context: Context) {}
 }
