@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  PayWall
-//
-//  Created by Константин Филиппов on 10.09.2025.
-//
-
 import UIKit
 
 @main
