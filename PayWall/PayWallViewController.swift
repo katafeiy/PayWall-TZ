@@ -1,7 +1,7 @@
 import UIKit
 import SwiftUI
 
-class PayWall: UIViewController {
+class PayWallViewController: UIViewController {
     
     let price: String = "$5.99/week"
     
@@ -27,6 +27,7 @@ class PayWall: UIViewController {
    var handPointImage: UIImageView = {
         let image = UIImage.handPoint
         let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
         return imageView
     }()
@@ -79,6 +80,7 @@ class PayWall: UIViewController {
         tableView.register(PayWallCell.self, forCellReuseIdentifier: PayWallCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        tableView.isScrollEnabled = false
         return tableView
     }()
     
@@ -183,8 +185,8 @@ class PayWall: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        setupUI()
         setupGradientBackground()
+        setupUI()
     }
     
     @objc
@@ -273,7 +275,6 @@ class PayWall: UIViewController {
     private func setupGradientBackground() {
   
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = view.bounds
         
         gradientLayer.colors = [
             UIColor.bg.cgColor,
@@ -294,7 +295,7 @@ class PayWall: UIViewController {
     }
 }
 
-extension PayWall: UITableViewDelegate, UITableViewDataSource {
+extension PayWallViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableItems.count
@@ -354,9 +355,9 @@ extension UIView {
 // Обертка для SwiftUI Preview
 struct PayWallPreview: UIViewControllerRepresentable {
     
-    func makeUIViewController(context: Context) -> PayWall { PayWall() }
+    func makeUIViewController(context: Context) -> PayWallViewController { PayWallViewController() }
     
-    func updateUIViewController(_ uiViewController: PayWall, context: Context) {}
+    func updateUIViewController(_ uiViewController: PayWallViewController, context: Context) {}
 }
 
 #Preview {
