@@ -126,8 +126,12 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         return button
     }()
     
-    private lazy var terms: UIButton = PayWallViewController.makeFooterButton(title: WebLink.terms.title, tag: WebLink.terms.rawValue, target: self)
-    private lazy var privacy: UIButton = PayWallViewController.makeFooterButton(title: WebLink.privacy.title, tag: WebLink.privacy.rawValue, target: self)
+    private lazy var terms: UIButton = PayWallViewController.makeFooterButton(
+        title: WebLink.terms.title, tag: WebLink.terms.rawValue, target: self
+    )
+    private lazy var privacy: UIButton = PayWallViewController.makeFooterButton(
+        title: WebLink.privacy.title, tag: WebLink.privacy.rawValue, target: self
+    )
     private lazy var subscriptionPolicy: UIButton = PayWallViewController.makeFooterButton(
         title: WebLink.subscriptionPolicy.title, tag: WebLink.subscriptionPolicy.rawValue, target: self
     )
