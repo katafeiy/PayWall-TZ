@@ -39,7 +39,7 @@ class PayWallCell: UITableViewCell {
     private let mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 4
+        stackView.spacing = 8
         stackView.alignment = .bottom
         return stackView
     }()
@@ -70,7 +70,6 @@ class PayWallCell: UITableViewCell {
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             mainStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             mainStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
             mainStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)

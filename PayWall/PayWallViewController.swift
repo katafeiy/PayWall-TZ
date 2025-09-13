@@ -41,14 +41,16 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         return label
     }()
     
-    private lazy var tapLess: UIButton = PayWallViewController.makeOptionButton(title: "Tap Less.")
-    private lazy var winMore: UIButton = PayWallViewController.makeOptionButton(title: "Win more.")
-    private lazy var automateAnything: UIButton = PayWallViewController.makeOptionButton(title: "Automate anything.")
+    private lazy var tapLess: UILabel = PayWallViewController.makeOptionLabel(title: "Tap Less.")
+    private lazy var winMore: UILabel = PayWallViewController.makeOptionLabel(title: "Win more.")
+    private lazy var automateAnything: UILabel = PayWallViewController.makeOptionLabel(title: "Automate anything.")
     
-    private lazy var stackView: UIStackView = {
+    private lazy var stackViewLabel: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [tapLess, winMore, automateAnything])
         stackView.axis = .horizontal
-        stackView.spacing = 8
+        stackView.alignment = .bottom
+        stackView.distribution = .fillProportionally
+        stackView.spacing = 14.5
         return stackView
     }()
     
@@ -187,7 +189,7 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
     func close() { dismiss(animated: true) }
     
     private func setupUI() {
-        view.addSubviews(closeButton, continueButton, handPointImage, payWallLabel, stackView, tableView, payView, stackViewFooter)
+        view.addSubviews(closeButton, continueButton, handPointImage, payWallLabel, stackViewLabel, tableView, payView, stackViewFooter)
         payView.addSubviews(paySwitch, payStackView)
         
         NSLayoutConstraint.activate([
@@ -204,14 +206,14 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
             payWallLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 48),
             payWallLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -48),
             
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: payWallLabel.bottomAnchor, constant: 8),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
+            stackViewLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackViewLabel.topAnchor.constraint(equalTo: payWallLabel.bottomAnchor, constant: 8),
+            stackViewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
+            stackViewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
             
-            tableView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 32),
+            tableView.topAnchor.constraint(equalTo: stackViewLabel.bottomAnchor, constant: 32),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
             tableView.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -32),
             
             payView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
@@ -250,12 +252,12 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         view.layer.insertSublayer(gradientLayer, at: 0)
     }
     
-    private static func makeOptionButton(title: String) -> UIButton {
-        let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(.mainGray, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        return button
+    private static func makeOptionLabel(title: String) -> UILabel {
+        let label = UILabel()
+        label.text = title
+        label.textColor = .mainGray
+        label.font = UIFont.systemFont(ofSize: 15)
+        return label
     }
     
     private static func makeFooterButton(title: String, tag: Int, target: Any) -> UIButton {
