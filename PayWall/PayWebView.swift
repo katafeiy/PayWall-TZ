@@ -4,10 +4,12 @@ import WebKit
 final class WebViewController: UIViewController {
     
     private let urlString: String
+    private let navigationTitle: String
     private var webView: WKWebView!
     
-    init(urlString: String) {
+    init(urlString: String, navigationTitle: String) {
         self.urlString = urlString
+        self.navigationTitle = navigationTitle
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -46,7 +48,7 @@ final class WebViewController: UIViewController {
             navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-        let navItem = UINavigationItem(title: "Terms")
+        let navItem = UINavigationItem(title: navigationTitle)
         navItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,

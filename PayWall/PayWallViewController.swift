@@ -5,7 +5,7 @@ protocol PayWallViewProtocol: AnyObject {
     func updateSwitchState(isOn: Bool)
     func updateTable()
     func updateContinueButton(title: String)
-    func showWebPage(url: String)
+    func showWebPage(url: String, navigationTitle: String)
     func close()
 }
 
@@ -126,9 +126,11 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         return button
     }()
     
-    private lazy var terms: UIButton = PayWallViewController.makeFooterButton(title: "Terms", tag: WebLink.terms.rawValue, target: self)
-    private lazy var privacy: UIButton = PayWallViewController.makeFooterButton(title: "Privacy", tag: WebLink.privacy.rawValue, target: self)
-    private lazy var subscriptionPolicy: UIButton = PayWallViewController.makeFooterButton(title: "Subscription Policy", tag: WebLink.subscriptionPolicy.rawValue, target: self)
+    private lazy var terms: UIButton = PayWallViewController.makeFooterButton(title: WebLink.terms.title, tag: WebLink.terms.rawValue, target: self)
+    private lazy var privacy: UIButton = PayWallViewController.makeFooterButton(title: WebLink.privacy.title, tag: WebLink.privacy.rawValue, target: self)
+    private lazy var subscriptionPolicy: UIButton = PayWallViewController.makeFooterButton(
+        title: WebLink.subscriptionPolicy.title, tag: WebLink.subscriptionPolicy.rawValue, target: self
+    )
     
     private lazy var stackViewFooter: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [terms, privacy, subscriptionPolicy])
@@ -180,8 +182,8 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
     
     func updateContinueButton(title: String) { continueButton.setTitle(title, for: .normal) }
     func updateTable() { tableView.reloadData() }
-    func showWebPage(url: String) {
-        let webVC = WebViewController(urlString: url)
+    func showWebPage(url: String, navigationTitle: String) {
+        let webVC = WebViewController(urlString: url, navigationTitle: navigationTitle)
         webVC.modalPresentationStyle = .fullScreen
         present(webVC, animated: true)
     }

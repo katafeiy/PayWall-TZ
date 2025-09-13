@@ -27,6 +27,6 @@ final class PayWallPresenter {
     }
     func handleCheckbox(at index: Int) { checkedStates[index].toggle(); view?.updateTable() }
     func isChecked(at index: Int) -> Bool { checkedStates[index] }
-    func handleOpenWeb(_ link: WebLink) { view?.showWebPage(url: link.url) }
+    func handleOpenWeb(_ link: WebLink) { view?.showWebPage(url: link.url, navigationTitle: link.title) }
     var payPrice: String { price }
 }

@@ -11,4 +11,11 @@ enum WebLink: Int {
         case .subscriptionPolicy: "https://developer.apple.com/documentation/SwiftData"
         }
     }
+    var title: String {
+        switch self {
+        case .terms: "Terms"
+        case .privacy: "Privacy"
+        case .subscriptionPolicy: "Subscription Policy"
+        }
+    }
 }
