@@ -138,7 +138,6 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         return stackView
     }()
     
-
     init(presenter: PayWallPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
