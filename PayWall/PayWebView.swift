@@ -5,8 +5,23 @@ final class WebViewController: UIViewController {
     
     private let urlString: String
     private let navigationTitle: String
-    private var webView: WKWebView!
-    private var navBar: UINavigationBar!
+    
+    private lazy var webView: WKWebView = {
+        let webView = WKWebView()
+        return webView
+    }()
+    
+    private lazy var navBar: UINavigationBar = {
+        let navBar = UINavigationBar()
+        let navItem = UINavigationItem(title: navigationTitle)
+        navItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .close,
+            target: self,
+            action: #selector(closeTapped)
+        )
+        navBar.setItems([navItem], animated: false)
+        return navBar
+    }()
     
     init(urlString: String, navigationTitle: String) {
         self.urlString = urlString
@@ -20,42 +35,24 @@ final class WebViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavBar()
-        setupWebView()
+        setupUI()
         loadPage()
     }
     
-    private func setupWebView() {
-        webView = WKWebView(frame: .zero)
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(webView)
+    private func setupUI() {
+        
+        view.addSubviews(navBar, webView)
         
         NSLayoutConstraint.activate([
+            navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
             webView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    
-    private func setupNavBar() {
-        navBar = UINavigationBar()
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(navBar)
-        
-        NSLayoutConstraint.activate([
-            navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-        
-        let navItem = UINavigationItem(title: navigationTitle)
-        navItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .close,
-            target: self,
-            action: #selector(closeTapped)
-        )
-        navBar.setItems([navItem], animated: false)
     }
     
     private func loadPage() {
