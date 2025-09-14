@@ -35,9 +35,11 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
         let label = UILabel()
         label.numberOfLines = 2
         label.textAlignment = .center
-        label.text = "Unlock Full Control with AutoClicker Pro"
+        label.text = "Unlock Full Control\nwith AutoClicker Pro"
         label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
         label.textColor = .mainWhite
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
         return label
     }()
     
@@ -48,8 +50,8 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
     private lazy var stackViewLabel: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [tapLess, winMore, automateAnything])
         stackView.axis = .horizontal
-        stackView.alignment = .bottom
-        stackView.distribution = .fillProportionally
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
         stackView.spacing = 14.5
         return stackView
     }()
@@ -217,9 +219,9 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
             stackViewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
             
             tableView.topAnchor.constraint(equalTo: stackViewLabel.bottomAnchor, constant: 32),
+            tableView.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -32),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
-            tableView.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -32),
             
             payView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             payView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
