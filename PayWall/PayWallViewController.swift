@@ -206,7 +206,7 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
             continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             
             handPointImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            handPointImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 92),
+            handPointImage.topAnchor.constraint(equalTo: closeButton.bottomAnchor),
             
             payWallLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             payWallLabel.topAnchor.constraint(equalTo: handPointImage.bottomAnchor, constant: 48),
@@ -219,7 +219,7 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
             stackViewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
             
             tableView.topAnchor.constraint(equalTo: stackViewLabel.bottomAnchor, constant: 32),
-            tableView.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -32),
+            tableView.bottomAnchor.constraint(equalTo: payView.topAnchor, constant: -32),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 48),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -48),
             

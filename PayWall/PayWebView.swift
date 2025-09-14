@@ -6,6 +6,7 @@ final class WebViewController: UIViewController {
     private let urlString: String
     private let navigationTitle: String
     private var webView: WKWebView!
+    private var navBar: UINavigationBar!
     
     init(urlString: String, navigationTitle: String) {
         self.urlString = urlString
@@ -19,8 +20,8 @@ final class WebViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupWebView()
         setupNavBar()
+        setupWebView()
         loadPage()
     }
     
@@ -30,7 +31,7 @@ final class WebViewController: UIViewController {
         view.addSubview(webView)
         
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.topAnchor),
+            webView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -38,7 +39,7 @@ final class WebViewController: UIViewController {
     }
     
     private func setupNavBar() {
-        let navBar = UINavigationBar()
+        navBar = UINavigationBar()
         navBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navBar)
         
