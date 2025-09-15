@@ -1,31 +1,28 @@
 import UIKit
 import WebKit
 
-final class WebViewController: UIViewController {
+protocol WebViewProtocol: AnyObject {
+    func setupUI()
+    func loadPage(urlString: String)
+    func dismiss()
+}
+
+final class WebViewController: UIViewController, WebViewProtocol {
     
-    private let urlString: String
-    private let navigationTitle: String
+    private var presenter: WebViewPresenter!
+    
+    private lazy var navBar: UINavigationBar = {
+        let navBar = UINavigationBar()
+        return navBar
+    }()
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
         return webView
     }()
     
-    private lazy var navBar: UINavigationBar = {
-        let navBar = UINavigationBar()
-        let navItem = UINavigationItem(title: navigationTitle)
-        navItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .close,
-            target: self,
-            action: #selector(closeTapped)
-        )
-        navBar.setItems([navItem], animated: false)
-        return navBar
-    }()
-    
-    init(urlString: String, navigationTitle: String) {
-        self.urlString = urlString
-        self.navigationTitle = navigationTitle
+    init(presenter: WebViewPresenter) {
+        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,13 +30,15 @@ final class WebViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        loadPage()
-    }
-    
-    private func setupUI() {
+    func setupUI() {
+        let navBar = UINavigationBar()
+        let navItem = UINavigationItem(title: presenter.model.navigationTitle)
+        navItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .close,
+            target: self,
+            action: #selector(closeTapped)
+        )
+        navBar.setItems([navItem], animated: false)
         
         view.addSubviews(navBar, webView)
         
@@ -55,13 +54,22 @@ final class WebViewController: UIViewController {
         ])
     }
     
-    private func loadPage() {
+    func loadPage(urlString: String) {
         guard let url = URL(string: urlString) else { return }
         let request = URLRequest(url: url)
         webView.load(request)
     }
     
-    @objc private func closeTapped() {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        presenter.setupView()
+    }
+    
+    func dismiss() {
         dismiss(animated: true)
+    }
+    
+    @objc private func closeTapped() {
+            presenter.closeTapped()
     }
 }

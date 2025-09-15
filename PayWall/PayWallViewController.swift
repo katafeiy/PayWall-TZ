@@ -188,11 +188,17 @@ final class PayWallViewController: UIViewController, PayWallViewProtocol {
     
     func updateContinueButton(title: String) { continueButton.setTitle(title, for: .normal) }
     func updateTable() { tableView.reloadData() }
+    
     func showWebPage(url: String, navigationTitle: String) {
-        let webVC = WebViewController(urlString: url, navigationTitle: navigationTitle)
+        let webData = WebViewData(urlString: url, navigationTitle: navigationTitle)
+        let webPresenter = WebViewPresenter(model: webData)
+        let webVC = WebViewController(presenter: webPresenter)
+        webPresenter.view = webVC
+        
         webVC.modalPresentationStyle = .fullScreen
         present(webVC, animated: true)
     }
+    
     func close() { dismiss(animated: true) }
     
     private func setupUI() {
